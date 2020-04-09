@@ -4,6 +4,9 @@ const app = express()
 // port mana apinya akan dijalankan
 const port = 2020
 
+// agar dapat menerima objek saat post (req.body)
+app.use(express.json())
+
 // Config untuk MongoDB
 const mongodb = require('mongodb')
 const MongoClient = mongodb.MongoClient
@@ -21,27 +24,67 @@ MongoClient.connect(URL, { useNewUrlParser: true, useUnifiedTopology: true }, (e
     const db = client.db(database)
 
     // alamat, function yang akan di running ketika alamat itu dikunjungi
-    app.get('/users', (req, res) => {
-        // res.send('<h1>Hello Friend</h1>')
-        res.send(
-            {
-                "status": 404,
-                // req.query adalah data yang dikirim di masukkan di dalam params di postman
-                name: req.query
-            }
-        )
+    // app.get('/users', (req, res) => {
+    // res.send('<h1>Hello Friend</h1>')
+    //     res.send(
+    // {
+    //     "status": 404,
+    // req.query adalah data yang dikirim di masukkan di dalam params di postman
+    //     name: req.query
+    // }
+    //         '<h1>Welcom to my Home</h1>'
+    //     )
+    // })
+
+    app.post('/users', (req, res) => {
+        // mengambil property name dan age dari req.body
+        const { name, age } = req.body
+
+        // res.send(
+        // { name: req.body.name, age: req.body.age }
+        //     { name, age }
+        // )
+
+        // db.users.insertOne // asyncronous maka ada then nya // codingan untuk memasukkan ke database
+        db.collection('users').insertOne({ name, age })
+            .then((resp) => {
+                // res.send(resp)
+
+                // jika kita ingin untuk mendapatkan respon tertentu // id dan user property dari hasil responnya, resp.insertedId resp.ops[0] data yang akan dihasilkan
+                res.send(
+                    {
+                        id: resp.insertedId,
+                        user: resp.ops[0]
+                    }
+                )
+            })
     })
 
-    // kalau post pilih post di postman lalu body pilih raw dan pilih jason
-    app.post('/users', (req, res) => {
-        res.send(
-            req.body
-        )
+    app.get('/findone', (req, res) => {
+
+        // Data yang dikirim saat proses GET akan dianggap sebagai string
+        let _age = parseInt(req.query.age)
+
+        // Mencari satu data berdasarkan umurnya
+        db.collection('users').findOne({ age: _age })
+            .then((resp) => res.send(resp))
     })
+
+    // get data berdasarkan nama
+    app.get('/users', (req, res) => {
+        // harus sesuai dengan inputan yang dipostman // get dan params name 
+        let _age = parseInt(req.query.age)
+
+        // mencari lebih dari satu data berdasarkan umurnya
+        db.collection('users').find({ age: _age })
+            .toArray().then((resp) => {
+                res.send(resp)
+            })
+    })
+
 })
 
-// agar dapat menerima objek saat post (req.body)
-app.use(express.json())
+
 
 app.listen(port, () => {
     console.log('Api Running at port' + port);

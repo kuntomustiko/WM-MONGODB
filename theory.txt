@@ -1,0 +1,31 @@
+  
+GET
+   - Mengirim data sebagai Parameter
+   - Pada API, data tersebut akan berada di 'req.query'
+   - Contoh :
+                  app.get('/users', (req, res) => {
+                     res.send(
+                        req.query
+                     )
+                  })
+
+POST
+   - Mengirim data sebagai Body
+   - Data di kirim dalam bentuk JSON, maka kita harus menggunakan app.use(express.json())
+   - Pada API, data tersebut akan berada di 'req.body'
+   - Contoh :
+          
+                      // kalau post pilih post di postman lalu body pilih raw dan pilih jason
+    app.post('/users', (req, res) => {
+        res.send(
+            req.body
+        )
+    })
+
+findOne
+   - Hanya akan mencari satu data, jika sudah ditemukan satu data yang sesuai filter, tidak akan mencari data lagi
+   - Response dalam bentuk o b j e c t   
+
+find -> toArray()
+   - Akan mencari lebih dari satu data
+   - Response dalam bentuk a r r a y
