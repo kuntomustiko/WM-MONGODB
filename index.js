@@ -82,6 +82,33 @@ MongoClient.connect(URL, { useNewUrlParser: true, useUnifiedTopology: true }, (e
             })
     })
 
+    // DELETE BY AGE
+    // app.delete('/user/:age',(req,res)=>{
+    // params = jika yang di ambil itu berada di function (user/:age) || kita kan mau ambil age yang ada di dalam function delete maka gunakan params
+    //     let umur = parseInt(res.params.age)
+    //     db.collection('users').deleteOne({age: umur})
+    //     .then((resp)=> {
+    //         res.send(resp)
+    //     })
+    // })
+
+    // Get All Users
+    app.get('/alluser', (req, res) => {
+        db.collection('users').find({}).toArray()
+            .then((resp) => {
+                res.send(resp)
+            })
+    })
+
+    // DELETE BY Name
+    app.delete('/user/:name', (req, res) => {
+        let name = req.params.name
+        db.collection('users').deleteOne({ name })
+            .then((resp) => {
+                res.send(resp)
+            })
+    })
+
 })
 
 
